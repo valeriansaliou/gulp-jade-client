@@ -10,16 +10,33 @@
 "use strict";
 
 
-var gulp_util  = require("gulp-util");
-var through    = require("through2");
+var gulp_util    = require("gulp-util");
+var through      = require("through2");
+var Stream       = require("stream");
+
+var jade_client  = require("./lib/jade_client");
 
 
 module.exports = function(opts) {
   opts = opts || {};
 
-  return through.obj(function(file, encoding, callback) {
+  // Default opts
+  if (!("requireJs" in opts)) {
+    opts.requireJs = false;
+  }
+
+  var stream = new Stream.Readable();
+
+  if (opts.requireJs) {
+    stream.push("define(['jade'], function(jade) {\n");
+  }
+
+  // String which will eventually be written as a JS file
+  stream.push("var JST = {};\n");
+
+  through.obj(function(file, encoding, callback) {
     if (file.isNull()) {
-      return callback(null, file);
+      return;
     }
 
     if (file.isBuffer()) {
@@ -31,16 +48,25 @@ module.exports = function(opts) {
     }
 
     if (file.isStream()) {
-      // TODO
-      var streamer = null; //remove_logging.proceed(file, opts);
+      return jade_client.generate(file, opts, function(error, generated) {
+        if (error) {
+          return callback(
+            new gulp_util.PluginError(
+              "gulp-jade-client", ("Generation error: " + error)
+            )
+          );
+        }
 
-      streamer.on(
-        "error", this.emit.bind(this, "error")
-      );
-
-      file.contents = file.contents.pipe(streamer);
+        stream.push(generated);
+      });
     }
 
-    return callback(null, file);
+    return;
   });
+
+  if (opts.requireJs) {
+    stream.push("return JST;\n" + "});\n");
+  }
+
+  return stream;
 };

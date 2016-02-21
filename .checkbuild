@@ -5,10 +5,10 @@
     "allowFailures": false
   },
   "jshint": {
-    "args": ["index.js"]
+    "args": ["index.js", "lib/**/*.js"]
   },
   "jscs": {
-    "args": ["index.js"]
+    "args": ["index.js", "lib/**/*.js"]
   },
   "david": {
     "dev": true,

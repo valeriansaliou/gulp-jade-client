@@ -40,7 +40,8 @@
   "dependencies": {
     "gulp-util": "3.0.7",
     "through2": "2.0.1",
-    "replacestream": "4.0.0"
+    "event-stream": "3.3.2",
+    "jade": "1.11.0"
   },
 
   "devDependencies": {
@@ -49,7 +50,6 @@
     "mocha-lcov-reporter": "1.2.0",
     "istanbul": "0.4.2",
     "coveralls": "2.11.6",
-    "event-stream": "3.3.2",
     "vinyl": "1.1.1"
   },
 
