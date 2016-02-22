@@ -25,18 +25,14 @@ module.exports = function(opts) {
     opts.requireJs = false;
   }
 
-  var stream = new Stream.Readable();
+  var is_first = true,
+      is_last  = false;
 
-  if (opts.requireJs) {
-    stream.push("define(['jade'], function(jade) {\n");
-  }
+  return through.obj(function(file, encoding, callback) {
+    var self = this;
 
-  // String which will eventually be written as a JS file
-  stream.push("var JST = {};\n");
-
-  through.obj(function(file, encoding, callback) {
     if (file.isNull()) {
-      return;
+      return callback();
     }
 
     if (file.isBuffer()) {
@@ -48,7 +44,18 @@ module.exports = function(opts) {
     }
 
     if (file.isStream()) {
-      return jade_client.generate(file, opts, function(error, generated) {
+      if (is_first === true) {
+        is_first = false;
+
+        if (opts.requireJs) {
+          self.push("define(['jade'], function(jade) {\n");
+        }
+
+        // String which will eventually be written as a JS file
+        self.push("var JST = {};\n");
+      }
+
+      jade_client.generate(file, opts, function(error, generated) {
         if (error) {
           return callback(
             new gulp_util.PluginError(
@@ -57,16 +64,22 @@ module.exports = function(opts) {
           );
         }
 
-        stream.push(generated);
+        self.push(generated);
+
+        if (is_last === true) {
+          is_last = false;
+
+          if (opts.requireJs) {
+            self.push("return JST;\n" + "});\n");
+          }
+        }
+
+        return callback();
       });
+
+      return;
     }
 
-    return;
+    return callback();
   });
-
-  if (opts.requireJs) {
-    stream.push("return JST;\n" + "});\n");
-  }
-
-  return stream;
 };
