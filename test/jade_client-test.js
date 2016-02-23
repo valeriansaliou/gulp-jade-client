@@ -103,4 +103,14 @@ describe("gulp-jade-client", function() {
       }
     )
   );
+
+  it(
+    "should compile Jade template with non-default container",
+
+    testJadeClientGeneric(
+      "hello.js", referenceTestDate.hello, "hello_with_container", {
+        container : "NonDefaultContainer"
+      }
+    )
+  );
 });
