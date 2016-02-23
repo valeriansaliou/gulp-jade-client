@@ -65,7 +65,7 @@ module.exports = function(filename, opts) {
     if (file.isBuffer()) {
       try {
         generated.push(
-          jade_client.generate(file, opts).toBuffer()
+          jade_client.generate(file, opts)
         );
       } catch (error) {
         this.emit(
@@ -82,14 +82,20 @@ module.exports = function(filename, opts) {
     callback();
   }, function(callback) {
     // Encapsulate container code lines
-    generated.unshift("var " + opts.container + " = {};\n");
+    generated.unshift(
+      new Buffer("var " + opts.container + " = {};\n")
+    );
 
     if (opts.requireJs) {
       // Is inserted BEFORE the container variable declaration
-      generated.unshift("define(['jade'], function(jade) {\n");
+      generated.unshift(
+        new Buffer("define([\"jade\"], function(jade) {\n")
+      );
 
       // Is inserted at the very-end
-      generated.push("return " + opts.container + ";\n" + "});\n");
+      generated.push(
+        new Buffer("return " + opts.container + ";\n" + "});\n")
+      );
     }
 
     var generated_file = latest_file.clone({
@@ -97,7 +103,7 @@ module.exports = function(filename, opts) {
     });
 
     generated_file.path     = path.join(latest_file.base, filename);
-    generated_file.contents = event_stream.readArray(generated);
+    generated_file.contents = Buffer.concat(generated);
 
     this.push(generated_file);
 

@@ -53,8 +53,8 @@ gulp.task("jade_client", function() {
       gulp_jade_client("templates.js", {
         // Options (optional)
         // eg:
-        // container: "JadeClient",
-        // requireJs: true
+        // container : "JadeClient",
+        // requireJs : false
       })
     )
     .pipe(
