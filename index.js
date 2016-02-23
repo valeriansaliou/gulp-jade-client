@@ -10,14 +10,16 @@
 "use strict";
 
 
-var gulp_util    = require("gulp-util");
-var through      = require("through2");
-var Stream       = require("stream");
+var path          = require("path");
 
-var jade_client  = require("./lib/jade_client");
+var gulp_util     = require("gulp-util");
+var through       = require("through2");
+var event_stream  = require("event-stream");
+
+var jade_client   = require("./lib/jade_client");
 
 
-module.exports = function(opts) {
+module.exports = function(filename, opts) {
   opts = opts || {};
 
   // Default opts
@@ -25,61 +27,77 @@ module.exports = function(opts) {
     opts.requireJs = false;
   }
 
-  var is_first = true,
-      is_last  = false;
+  var latest_file, latest_mod,
+      generated = [];
 
   return through.obj(function(file, encoding, callback) {
-    var self = this;
+    // Validate filename
+    if (!filename || typeof filename !== "string") {
+      this.emit(
+        "error",
 
-    if (file.isNull()) {
-      return callback();
-    }
-
-    if (file.isBuffer()) {
-      return callback(
         new gulp_util.PluginError(
-          "gulp-jade-client", "Buffers not supported"
+          "gulp-jade-client", "Target filename missing"
         )
       );
-    }
-
-    if (file.isStream()) {
-      if (is_first === true) {
-        is_first = false;
-
-        if (opts.requireJs) {
-          self.push("define(['jade'], function(jade) {\n");
-        }
-
-        // String which will eventually be written as a JS file
-        self.push("var JST = {};\n");
-      }
-
-      jade_client.generate(file, opts, function(error, generated) {
-        if (error) {
-          return callback(
-            new gulp_util.PluginError(
-              "gulp-jade-client", ("Generation error: " + error)
-            )
-          );
-        }
-
-        self.push(generated);
-
-        if (is_last === true) {
-          is_last = false;
-
-          if (opts.requireJs) {
-            self.push("return JST;\n" + "});\n");
-          }
-        }
-
-        return callback();
-      });
 
       return;
     }
 
-    return callback();
+    // Ignore empty files
+    if (file.isNull()) {
+      callback();
+
+      return;
+    }
+
+    // We dont do streams (yet)
+    if (file.isStream()) {
+      this.emit(
+        "error",
+        new gulp_util.PluginError("gulp-jade-client", "Streams not supported")
+      );
+    }
+
+    if (file.isBuffer()) {
+      try {
+        generated.push(
+          jade_client.generate(file, opts).toBuffer()
+        );
+      } catch (error) {
+        this.emit(
+          "error", new gulp_util.PluginError("gulp-jade-client", error)
+        );
+      }
+
+      if (!latest_mod || file.stat && (file.stat.mtime > latest_mod)) {
+        latest_file = file;
+        latest_mod  = (file.stat && file.stat.mtime);
+      }
+    }
+
+    callback();
+  }, function(callback) {
+    // Encapsulate JST code lines
+    generated.unshift("var JST = {};\n");
+
+    if (opts.requireJs) {
+      // Is inserted BEFORE the JST variable declaration
+      generated.unshift("define(['jade'], function(jade) {\n");
+
+      // Is inserted at the very-end
+      generated.push("return JST;\n" + "});\n");
+    }
+
+    var generated_file = latest_file.clone({
+      contents : false
+    });
+
+    generated_file.path     = path.join(latest_file.base, filename);
+    generated_file.contents = event_stream.readArray(generated);
+
+    this.push(generated_file);
+
+    callback();
   });
 };

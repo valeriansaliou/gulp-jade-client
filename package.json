@@ -1,7 +1,7 @@
 {
   "name": "gulp-jade-client",
   "description": "Compiles Jade templates from the browser.",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "homepage": "https://github.com/valeriansaliou/gulp-jade-client",
 
   "author": {
@@ -49,8 +49,7 @@
     "mocha": "2.4.5",
     "mocha-lcov-reporter": "1.2.0",
     "istanbul": "0.4.2",
-    "coveralls": "2.11.6",
-    "vinyl": "1.1.1"
+    "coveralls": "2.11.6"
   },
 
   "keywords": [

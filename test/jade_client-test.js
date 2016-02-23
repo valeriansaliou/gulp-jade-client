@@ -11,8 +11,6 @@
 
 
 var assert            = require("assert");
-var event_stream      = require("event-stream");
-var File              = require("vinyl");
 var gulp_jade_client  = require("..");
 
 

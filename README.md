@@ -43,7 +43,7 @@ In this example, we build a single js file called `hello_world.js`, which has th
 gulp.task("jade_client", function() {
   return gulp.src("src/templates/**/*.jade")
     .pipe(
-      gulp_jade_client({
+      gulp_jade_client("templates.js", {
         // Options (optional)
         // eg:
         // requireJs: true
@@ -51,7 +51,7 @@ gulp.task("jade_client", function() {
     )
     .pipe(
       gulp.dest(
-        "build/javascripts/templates.js"
+        "build/javascripts"
       )
     );
 });
