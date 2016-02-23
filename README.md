@@ -26,6 +26,13 @@ Lastly, add the configuration settings (see below) to your gulpfile.
 
 ### Options
 
+#### container
+
+Type: `String`
+Default value: `JadeClient`
+
+Change it to specify another JavaScript container object, which will be used to store and access your templates.
+
 #### requireJs
 
 Type: `Boolean`
@@ -37,7 +44,7 @@ If set to true, then the output file will be a requireJs module.
 
 #### Default Options
 
-In this example, we build a single js file called `hello_world.js`, which has the result of two compile jade templates, `hello_world.jade`, and `hola_mundo.jade`.  We have also set requireJs to be `true`, which means we will consume this template as a requireJs module.  In our JavaScript, we can then get the output of the 'hello' template with `JST['hello']`.
+In this example, we build a single js file called `templates.js`, which has the result of input compiled Jade templates. In our JavaScript, we can then get the output of the 'hello.jade' template with `JadeClient['hello']` (`JadeClient` is the default container, but you can change that).
 
 ```javascript
 gulp.task("jade_client", function() {
@@ -46,6 +53,7 @@ gulp.task("jade_client", function() {
       gulp_jade_client("templates.js", {
         // Options (optional)
         // eg:
+        // container: "JadeClient",
         // requireJs: true
       })
     )
@@ -63,5 +71,5 @@ Make sure that you have included your compiled template file, as well as runtime
 
 The following code (using jQuery) will render the "hello" template into #target.
 ````js
-$("#target").html(JST["hello"]);
+$("#target").html(JadeClient["hello"]);
 ````

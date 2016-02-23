@@ -26,6 +26,9 @@ module.exports = function(filename, opts) {
   if (!("requireJs" in opts)) {
     opts.requireJs = false;
   }
+  if (!("container" in opts)) {
+    opts.container = "JadeClient";
+  }
 
   var latest_file, latest_mod,
       generated = [];
@@ -78,15 +81,15 @@ module.exports = function(filename, opts) {
 
     callback();
   }, function(callback) {
-    // Encapsulate JST code lines
-    generated.unshift("var JST = {};\n");
+    // Encapsulate container code lines
+    generated.unshift("var " + opts.container + " = {};\n");
 
     if (opts.requireJs) {
-      // Is inserted BEFORE the JST variable declaration
+      // Is inserted BEFORE the container variable declaration
       generated.unshift("define(['jade'], function(jade) {\n");
 
       // Is inserted at the very-end
-      generated.push("return JST;\n" + "});\n");
+      generated.push("return " + opts.container + ";\n" + "});\n");
     }
 
     var generated_file = latest_file.clone({
