@@ -13,6 +13,6 @@
   "david": {
     "dev": true,
     "stable": true,
-    "ignore": []
+    "ignore": ["vinyl"]
   }
 }

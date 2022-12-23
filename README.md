@@ -1,6 +1,6 @@
 # gulp-jade-client
 
-[![Test Coverage](https://img.shields.io/coveralls/valeriansaliou/gulp-jade-client/master.svg)](https://coveralls.io/github/valeriansaliou/gulp-jade-client?branch=master) [![NPM](https://img.shields.io/npm/v/gulp-jade-client.svg)](https://www.npmjs.com/package/gulp-jade-client) [![Downloads](https://img.shields.io/npm/dt/gulp-jade-client.svg)](https://www.npmjs.com/package/gulp-jade-client)
+[![NPM](https://img.shields.io/npm/v/gulp-jade-client.svg)](https://www.npmjs.com/package/gulp-jade-client) [![Downloads](https://img.shields.io/npm/dt/gulp-jade-client.svg)](https://www.npmjs.com/package/gulp-jade-client)
 
 Compiles Jade templates from the browser. Allows you to develop Jade-powered frontend apps, which render templates client-side (you can pass template data in the client, eg: browser).
 
